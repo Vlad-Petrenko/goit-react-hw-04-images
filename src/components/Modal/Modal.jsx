@@ -1,44 +1,43 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Modal.module.css';
 
-export class Modal extends Component {
-  static propTypes = {
-    imageSelected: PropTypes.shape({
-      largeImageURL: PropTypes.string.isRequired,
-      tags: PropTypes.string.isRequired,
-    }).isRequired,
-    toggleModal: PropTypes.func.isRequired,
-  };
-  
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
+export const Modal = ({ imageSelected, toggleModal }) => {
+  const { largeImageURL, tags } = imageSelected;
 
-  handleKeyDown = e => {
+  const handleKeyDown = e => {
     if (e.code === 'Escape') {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
 
-  handleBackdropClick = e => {
+  const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
 
-  render() {
-    const { largeImageURL, tags } = this.props.imageSelected;
-    return (
-      <div className={styles.overlay} onClick={this.handleBackdropClick}>
-        <div className={styles.modal}>
-          <img src={largeImageURL} alt={tags} />
-        </div>
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  });
+
+  return (
+    <div className={styles.overlay} onClick={handleBackdropClick}>
+      <div className={styles.modal}>
+        <img src={largeImageURL} alt={tags} />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+Modal.propTypes = {
+  imageSelected: PropTypes.shape({
+    largeImageURL: PropTypes.string.isRequired,
+    tags: PropTypes.string.isRequired,
+  }).isRequired,
+  toggleModal: PropTypes.func.isRequired,
+};
