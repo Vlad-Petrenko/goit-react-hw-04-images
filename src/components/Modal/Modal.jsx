@@ -5,12 +5,6 @@ import styles from './Modal.module.css';
 export const Modal = ({ imageSelected, toggleModal }) => {
   const { largeImageURL, tags } = imageSelected;
 
-  const handleKeyDown = e => {
-    if (e.code === 'Escape') {
-      toggleModal();
-    }
-  };
-
   const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
       toggleModal();
@@ -18,12 +12,18 @@ export const Modal = ({ imageSelected, toggleModal }) => {
   };
 
   useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.code === 'Escape') {
+        toggleModal();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  });
+  }, [toggleModal]);
 
   return (
     <div className={styles.overlay} onClick={handleBackdropClick}>
